@@ -5029,19 +5029,13 @@ app.get("/heist", requireAuth, async (req, res) => {
             <div class="result-card">
 
                 <div class="result-label">
-                    SERVER-AUTHORITATIVE
+                    How TO WIN
                 </div>
 
-                <p>
-
-                    The browser cannot create,
-                    modify, or choose Weekly Heist
-                    winners. Final rankings and
-                    rewards are determined by the
-                    ChucklePad PostgreSQL settlement
-                    function using valid Daily Hunt
-                    submissions.
-
+             <p>
+                    Winners are ranked by valid Daily Hunt tickets
+                    earned during the week. The top 100 split the
+                    prize pool every Monday at 00:00 UTC.
                 </p>
 
             </div>
