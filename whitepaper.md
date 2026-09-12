@@ -6,7 +6,7 @@
 - **Date:** September 2026
 - **Network:** Base
 - **Author:** The ChucklePad Team
-- **Live:** https://yourdomain.com/whitepaper
+- **Live:** https://chucklepad.fun/whitepaper
 
 ---
 
