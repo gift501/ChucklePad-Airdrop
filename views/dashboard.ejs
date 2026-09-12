@@ -1,0 +1,370 @@
+<%- include("partials/header", { title }) %>
+
+<section class="dashboard-section">
+
+    <div class="dashboard-container">
+
+        <div class="dashboard-welcome">
+
+            <span class="eyebrow">
+                YOUR CHUCKLEPAD
+            </span>
+
+            <h1>
+                Hey, <%= profile.username %>.
+            </h1>
+
+            <p>
+                Welcome to your dashboard.
+            </p>
+
+        </div>
+
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <span>
+                    POINTS
+                </span>
+
+                <strong>
+                    <%= Number(profile.points).toLocaleString() %>
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    TICKETS
+                </span>
+
+                <strong>
+                    <%= Number(profile.tickets).toLocaleString() %>
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    STREAK
+                </span>
+
+                <strong>
+                    <%= profile.streak_days %>
+                </strong>
+
+                <small>
+                    days
+                </small>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    GENESIS
+                </span>
+
+                <strong>
+                    <%= profile.genesis_eligible ? "YES" : "—" %>
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-grid">
+
+
+            <div class="dashboard-card">
+
+                <span class="eyebrow">
+                    DAILY
+                </span>
+
+                <h2>
+                    Daily Sign-In
+                </h2>
+
+                <p>
+                    Check in every day and build your streak.
+                </p>
+
+                <button
+                    id="signinButton"
+                    class="button button-primary"
+                >
+                    CLAIM +100
+                </button>
+
+                <div
+                    id="signinResult"
+                    class="action-result"
+                ></div>
+
+            </div>
+
+
+            <a
+                href="/hunt"
+                class="dashboard-card dashboard-link"
+            >
+
+                <span class="eyebrow">
+                    CHALLENGE
+                </span>
+
+                <h2>
+                    Daily Hunt
+                </h2>
+
+                <p>
+                    Complete today's challenge and earn
+                    Points and Tickets.
+                </p>
+
+                <span class="card-arrow">
+                    →
+                </span>
+
+            </a>
+
+
+            <a
+                href="/rocket"
+                class="dashboard-card dashboard-link"
+            >
+
+                <span class="eyebrow">
+                    GAME
+                </span>
+
+                <h2>
+                    Rocket Rush
+                </h2>
+
+                <p>
+                    Launch your rocket and see how far you can fly.
+                </p>
+
+                <span class="card-arrow">
+                    →
+                </span>
+
+            </a>
+
+
+            <a
+                href="/heist"
+                class="dashboard-card dashboard-link"
+            >
+
+                <span class="eyebrow">
+                    WEEKLY
+                </span>
+
+                <h2>
+                    Weekly Heist
+                </h2>
+
+                <p>
+                    Build Tickets and compete for the weekly pool.
+                </p>
+
+                <span class="card-arrow">
+                    →
+                </span>
+
+            </a>
+
+        </div>
+
+
+        <div class="profile-card">
+
+            <div>
+
+                <span class="eyebrow">
+                    YOUR REFERRAL CODE
+                </span>
+
+                <h2>
+                    <%= profile.referral_code %>
+                </h2>
+
+                <p>
+                    Share this code with genuine new participants.
+                </p>
+
+            </div>
+
+            <button
+                class="button button-secondary"
+                id="copyReferral"
+                data-code="<%= profile.referral_code %>"
+            >
+                COPY CODE
+            </button>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="/logout"
+            class="logout-form"
+        >
+
+            <button
+                type="submit"
+                class="logout-button"
+            >
+                Log out
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<script>
+
+const signinButton =
+    document.getElementById("signinButton");
+
+const signinResult =
+    document.getElementById("signinResult");
+
+
+if (signinButton) {
+
+    signinButton.addEventListener(
+        "click",
+        async () => {
+
+            signinButton.disabled = true;
+
+            signinButton.textContent =
+                "PROCESSING...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/daily-signin",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            }
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!data.success) {
+
+                    throw new Error(
+                        data.error ||
+                        "Unable to claim."
+                    );
+
+                }
+
+
+                if (
+                    data.result.reason ===
+                    "already_claimed"
+                ) {
+
+                    signinResult.textContent =
+                        "You've already claimed today's sign-in.";
+
+                    return;
+
+                }
+
+
+                signinResult.textContent =
+                    `+${data.result.total_awarded.toLocaleString()} Points added. Streak: ${data.result.streak} days.`;
+
+                signinButton.textContent =
+                    "CLAIMED";
+
+
+                setTimeout(
+                    () => location.reload(),
+                    1200
+                );
+
+
+            } catch (error) {
+
+                signinResult.textContent =
+                    error.message;
+
+                signinButton.disabled =
+                    false;
+
+                signinButton.textContent =
+                    "CLAIM +100";
+
+            }
+
+        }
+    );
+
+}
+
+
+const copyReferral =
+    document.getElementById("copyReferral");
+
+
+if (copyReferral) {
+
+    copyReferral.addEventListener(
+        "click",
+        async () => {
+
+            const code =
+                copyReferral.dataset.code;
+
+            await navigator.clipboard.writeText(code);
+
+            copyReferral.textContent =
+                "COPIED!";
+
+            setTimeout(
+                () => {
+                    copyReferral.textContent =
+                        "COPY CODE";
+                },
+                1500
+            );
+
+        }
+    );
+
+}
+
+</script>
+
+
+<%- include("partials/footer") %>

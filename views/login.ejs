@@ -1,0 +1,97 @@
+<%- include("partials/header", { title }) %>
+
+<section class="auth-section">
+
+    <div class="auth-container">
+
+        <div class="auth-heading">
+
+            <span class="eyebrow">
+                WELCOME BACK
+            </span>
+
+            <h1>
+                Log in.
+            </h1>
+
+            <p>
+                Continue your ChucklePad journey.
+            </p>
+
+        </div>
+
+
+        <% if (error) { %>
+
+            <div class="form-error">
+                <%= error %>
+            </div>
+
+        <% } %>
+
+
+        <form
+            method="POST"
+            action="/login"
+            class="auth-form"
+        >
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="button button-primary form-submit"
+            >
+                LOG IN
+            </button>
+
+
+            <p class="auth-switch">
+
+                Don't have an account?
+
+                <a href="/register">
+                    Create one
+                </a>
+
+            </p>
+
+        </form>
+
+    </div>
+
+</section>
+
+<%- include("partials/footer") %>

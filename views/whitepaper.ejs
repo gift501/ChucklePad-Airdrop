@@ -1,0 +1,1116 @@
+<%
+  const title = "ChucklePad — White Paper V1";
+%>
+
+<%- include("partials/header", { title }) %>
+
+<style>
+  .wp-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: #ff8a00;
+    z-index: 9999;
+    transition: width 0.1s linear;
+  }
+
+  .wp-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 60px;
+    width: min(1400px, calc(100% - 40px));
+    margin: 40px auto 100px;
+  }
+
+  .wp-sidebar {
+    position: sticky;
+    top: 100px;
+    align-self: start;
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
+    padding-right: 20px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .wp-sidebar-title {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: #ff8a00;
+    margin-bottom: 20px;
+  }
+
+  .wp-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .wp-nav li { margin-bottom: 4px; }
+
+  .wp-nav a {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #a7a7b0;
+    transition: 0.15s ease;
+  }
+
+  .wp-nav a:hover {
+    color: #f5f5f5;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .wp-nav a.active {
+    color: #ff8a00;
+    background: rgba(255,138,0,0.08);
+  }
+
+  .wp-nav-num {
+    color: #ff8a00;
+    font-weight: 900;
+    margin-right: 8px;
+    opacity: 0.7;
+  }
+
+  .wp-main { max-width: 760px; }
+
+  .wp-header {
+    margin-bottom: 80px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .wp-header .eyebrow { margin-bottom: 20px; }
+
+  .wp-header h1 {
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+    margin: 0 0 20px;
+  }
+
+  .wp-header h1 span { color: #ff8a00; }
+
+  .wp-header .subtitle {
+    font-size: 20px;
+    color: #a7a7b0;
+    line-height: 1.5;
+    max-width: 560px;
+  }
+
+  .wp-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 30px;
+    font-size: 13px;
+    color: #777780;
+  }
+
+  .wp-meta strong {
+    color: #f5f5f5;
+    font-weight: 800;
+  }
+
+  .wp-download {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 22px;
+    border: 1px solid rgba(255,138,0,0.3);
+    border-radius: 999px;
+    background: transparent;
+    color: #ff8a00;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .wp-download:hover {
+    background: rgba(255,138,0,0.08);
+    border-color: #ff8a00;
+  }
+
+  .wp-page {
+    padding: 60px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    scroll-margin-top: 100px;
+  }
+
+  .wp-page:last-of-type { border-bottom: 0; }
+
+  .wp-page-num {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: #ff8a00;
+    margin-bottom: 20px;
+  }
+
+  .wp-page h2 {
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    margin: 0 0 30px;
+  }
+
+  .wp-page h3 {
+    font-size: 22px;
+    margin: 40px 0 15px;
+    letter-spacing: -0.02em;
+  }
+
+  .wp-page h4 {
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: #ff8a00;
+    margin: 30px 0 10px;
+  }
+
+  .wp-page p {
+    font-size: 17px;
+    line-height: 1.75;
+    color: #d8d8e0;
+    margin: 0 0 20px;
+  }
+
+  .wp-page p strong {
+    color: #f5f5f5;
+    font-weight: 800;
+  }
+
+  .wp-page ul {
+    padding-left: 22px;
+    margin: 0 0 20px;
+  }
+
+  .wp-page li {
+    font-size: 17px;
+    line-height: 1.75;
+    color: #d8d8e0;
+    margin-bottom: 8px;
+  }
+
+  .wp-page a {
+    color: #ff8a00;
+    text-decoration: underline;
+  }
+
+  .wp-quote {
+    margin: 40px 0;
+    padding: 30px 35px;
+    border-left: 3px solid #ff8a00;
+    background: rgba(255,138,0,0.04);
+    border-radius: 0 16px 16px 0;
+    font-size: 22px;
+    line-height: 1.5;
+    font-style: italic;
+    color: #f5f5f5;
+  }
+
+  .wp-emoji-hero {
+    text-align: center;
+    margin: 40px 0;
+    font-size: clamp(80px, 15vw, 160px);
+    line-height: 1;
+    filter: drop-shadow(0 0 40px rgba(255,138,0,0.3));
+  }
+
+  .wp-emoji-row {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 40px 0;
+    font-size: 60px;
+    line-height: 1;
+  }
+
+  .wp-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 40px 0;
+  }
+
+  .wp-card {
+    padding: 28px 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    background: #101014;
+    transition: 0.25s ease;
+  }
+
+  .wp-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,138,0,0.4);
+  }
+
+  .wp-card-emoji {
+    font-size: 42px;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+
+  .wp-card-title {
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: #ff8a00;
+    margin-bottom: 10px;
+  }
+
+  .wp-card h3 {
+    margin: 0 0 12px;
+    font-size: 20px;
+  }
+
+  .wp-card p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #a7a7b0;
+    margin: 0;
+  }
+
+  .wp-svg-wrap {
+    margin: 40px 0;
+    text-align: center;
+  }
+
+  .wp-svg-wrap svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .wp-alloc {
+    margin: 30px 0;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .wp-alloc-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 14px 22px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 15px;
+  }
+
+  .wp-alloc-row:last-child { border-bottom: 0; }
+
+  .wp-alloc-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .wp-alloc-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .wp-alloc-pct {
+    color: #ff8a00;
+    font-weight: 900;
+  }
+
+  .wp-hindrance {
+    padding: 24px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    background: #0c0c10;
+  }
+
+  .wp-hindrance-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .wp-hindrance-emoji {
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .wp-hindrance-label {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: #ff8a00;
+  }
+
+  .wp-hindrance h3 {
+    margin: 0 0 12px;
+    font-size: 19px;
+    letter-spacing: -0.01em;
+  }
+
+  .wp-hindrance p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.65;
+    color: #a7a7b0;
+  }
+
+  .wp-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ff8a00;
+    color: #07070a;
+    border: 0;
+    font-size: 20px;
+    font-weight: 900;
+    cursor: pointer;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(255,138,0,0.3);
+  }
+
+  .wp-top.show { display: block; }
+
+  @media (max-width: 900px) {
+    .wp-layout {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .wp-sidebar {
+      position: relative;
+      top: 0;
+      max-height: none;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .wp-cards { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    body {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+
+    .site-header,
+    .site-footer,
+    .wp-sidebar,
+    .wp-progress,
+    .wp-top,
+    .wp-download,
+    .wp-meta { display: none !important; }
+
+    .wp-layout {
+      display: block !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .wp-main { max-width: 100% !important; }
+
+    .wp-page {
+      page-break-after: always;
+      border-bottom: 0 !important;
+      padding: 30px 0 !important;
+    }
+
+    .wp-page:last-of-type { page-break-after: auto; }
+
+    .wp-page h2,
+    .wp-page h3,
+    .wp-header h1 { color: #000000 !important; }
+
+    .wp-page p,
+    .wp-page li {
+      color: #333333 !important;
+      font-size: 12pt !important;
+      line-height: 1.6 !important;
+    }
+
+    .wp-page-num,
+    .wp-page h4,
+    .wp-card-title,
+    .wp-hindrance-label { color: #cc6a00 !important; }
+
+    .wp-card,
+    .wp-hindrance,
+    .wp-quote {
+      background: #f8f8f8 !important;
+      border: 1px solid #dddddd !important;
+      page-break-inside: avoid;
+    }
+
+    .wp-quote {
+      border-left: 3px solid #cc6a00 !important;
+      font-style: italic;
+    }
+
+    .wp-emoji-hero,
+    .wp-emoji-row,
+    .wp-card-emoji { filter: none !important; }
+
+    a {
+      color: #cc6a00 !important;
+      text-decoration: underline;
+    }
+
+    .wp-alloc-row { border-bottom: 1px solid #e0e0e0 !important; }
+    .wp-alloc-pct { color: #cc6a00 !important; }
+
+    @page { margin: 20mm; }
+  }
+</style>
+
+
+<div class="wp-progress" id="wpProgress"></div>
+
+<div class="wp-layout">
+
+  <aside class="wp-sidebar">
+
+    <div class="wp-sidebar-title">
+      WHITE PAPER V1
+    </div>
+
+    <ul class="wp-nav" id="wpNav">
+      <li><a href="#page-1"><span class="wp-nav-num">01</span>The Laugh That Wanted More</a></li>
+      <li><a href="#page-2"><span class="wp-nav-num">02</span>The Ecosystem That Laughs Back</a></li>
+      <li><a href="#page-3"><span class="wp-nav-num">03</span>Three Pillars, One Purpose</a></li>
+      <li><a href="#page-4"><span class="wp-nav-num">04</span>The Token That Earns Its Name</a></li>
+      <li><a href="#page-5"><span class="wp-nav-num">05</span>The Community That Governs Itself</a></li>
+      <li><a href="#page-6"><span class="wp-nav-num">06</span>Honest Hindrances</a></li>
+      <li><a href="#page-7"><span class="wp-nav-num">07</span>Little by Little</a></li>
+    </ul>
+
+  </aside>
+
+
+  <main class="wp-main">
+
+    <header class="wp-header">
+
+      <div class="eyebrow">WHITE PAPER · V1</div>
+
+      <h1>Chuckle<span>Pad</span></h1>
+
+      <p class="subtitle">
+        A community-driven meme ecosystem built on Base,
+        combining the fun of meme culture with meaningful
+        participation and real-world impact.
+      </p>
+
+      <div class="wp-meta">
+        <div><strong>Version</strong> · 1.0</div>
+        <div><strong>Date</strong> · September 2026</div>
+        <div><strong>Network</strong> · Base</div>
+        <div><strong>Author</strong> · The ChucklePad Team</div>
+      </div>
+
+      <button class="wp-download" onclick="window.print()">
+        DOWNLOAD PDF ↓
+      </button>
+
+    </header>
+
+
+    <section class="wp-page" id="page-1">
+
+      <div class="wp-page-num">PAGE 01</div>
+
+      <h2>The Laugh That Wanted More</h2>
+
+      <div class="wp-emoji-hero">😂</div>
+
+      <p>
+        Meme culture is one of the most powerful social forces
+        of the internet age. It brings strangers together,
+        creates inside jokes between people who will never
+        meet, and turns shared laughter into a language of its own.
+      </p>
+
+      <p>
+        But there is a question almost nobody asks:
+        <strong>what if that same energy could do something more?</strong>
+      </p>
+
+      <p>
+        Today, meme culture is measured in engagement, virality,
+        and attention — but rarely in impact. Millions of people
+        laugh together every day, and then they move on.
+        The laughter happens. Nothing else does.
+      </p>
+
+      <p>
+        ChucklePad exists because we think that's a waste.
+      </p>
+
+      <div class="wp-quote">
+        People should not have to choose between having fun
+        and doing something meaningful.
+      </div>
+
+      <p>
+        <strong>ChucklePad ($CPAD)</strong> combines meme
+        culture, community participation, education,
+        rewards, and social impact in one place — designed so
+        that every laugh, and every challenge quietly feeds into
+        something larger than itself.
+      </p>
+
+      <p>
+        The philosophy is simple: <strong>little by little.</strong>
+        Just built, one honest step at a time.
+      </p>
+
+      <p>
+        This white paper explains what ChucklePad is,
+        why it exists and how it works.
+      </p>
+
+    </section>
+
+
+    <section class="wp-page" id="page-2">
+
+      <div class="wp-page-num">PAGE 02</div>
+
+      <h2>The Ecosystem That Laughs Back</h2>
+
+      <p>
+        ChucklePad is a small ecosystem of interconnected experiences —
+        each one designed to reward presence, effort, and community.
+      </p>
+
+      <div class="wp-cards">
+
+        <div class="wp-card">
+          <div class="wp-card-emoji">🧠</div>
+          <div class="wp-card-title">DAILY</div>
+          <h3>Daily Hunt</h3>
+          <p>One thoughtful question a day. Share a real idea. Earn Points and Tickets.</p>
+        </div>
+
+        <div class="wp-card">
+          <div class="wp-card-emoji">🚀</div>
+          <div class="wp-card-title">GAME</div>
+          <h3>Rocket Rush</h3>
+          <p>Three attempts a day. Provably fair. Cash out before the rocket explodes.</p>
+        </div>
+
+        <div class="wp-card">
+          <div class="wp-card-emoji">🏆</div>
+          <div class="wp-card-title">WEEKLY</div>
+          <h3>Weekly Heist</h3>
+          <p>Turn your tickets into a weekly score. Top 100 split a 1,000,000 Point pool.</p>
+        </div>
+
+      </div>
+
+      <h3>Points and Tickets</h3>
+
+      <p>
+        Every activity earns <strong>Points</strong>. Points are
+        the off-chain currency of participation — they accumulate
+        in your profile, and they reflect how much you've
+        contributed to the community.
+      </p>
+
+      <p>
+        Daily Hunt earns <strong>Tickets</strong>.
+        Tickets feed directly into the Weekly Heist — the more
+        valid Hunts you complete during a Monday-to-Monday window,
+        the higher you climb. At the end of each week, the top
+        100 ticket holders split a <strong>1,000,000 Point pool</strong>.
+      </p>
+
+      <h3>Why Base</h3>
+
+      <p>
+        ChucklePad is built on <strong>Base</strong>, the
+        Ethereum L2 incubated by Coinbase. Base is fast, cheap,
+        and increasingly the home of serious on-chain
+        communities. When $CPAD arrives, it will arrive on Base,
+        and ChuckleGovernment NFTs will live on Base.
+      </p>
+
+      <div class="wp-svg-wrap">
+        <svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+
+          <circle cx="300" cy="130" r="46" fill="#ff8a00" />
+          <text x="300" y="128" text-anchor="middle" fill="#07070a" font-size="14" font-weight="900" letter-spacing="1">CHUCKLE</text>
+          <text x="300" y="145" text-anchor="middle" fill="#07070a" font-size="14" font-weight="900" letter-spacing="1">PAD</text>
+
+          <circle cx="90" cy="70" r="40" fill="none" stroke="#ff8a00" stroke-width="2" />
+          <text x="90" y="76" text-anchor="middle" fill="#f5f5f5" font-size="22">🧠</text>
+          <text x="90" y="132" text-anchor="middle" fill="#a7a7b0" font-size="11" font-weight="900" letter-spacing="1">HUNT</text>
+
+          <circle cx="90" cy="190" r="40" fill="none" stroke="#ff8a00" stroke-width="2" />
+          <text x="90" y="196" text-anchor="middle" fill="#f5f5f5" font-size="22">🚀</text>
+          <text x="90" y="250" text-anchor="middle" fill="#a7a7b0" font-size="11" font-weight="900" letter-spacing="1">ROCKET</text>
+
+          <circle cx="510" cy="130" r="40" fill="none" stroke="#ff8a00" stroke-width="2" />
+          <text x="510" y="136" text-anchor="middle" fill="#f5f5f5" font-size="22">🏆</text>
+          <text x="510" y="192" text-anchor="middle" fill="#a7a7b0" font-size="11" font-weight="900" letter-spacing="1">HEIST</text>
+
+          <line x1="130" y1="70" x2="260" y2="115" stroke="#ff8a00" stroke-width="1" opacity="0.5" />
+          <line x1="130" y1="190" x2="260" y2="145" stroke="#ff8a00" stroke-width="1" opacity="0.5" />
+          <line x1="345" y1="130" x2="470" y2="130" stroke="#ff8a00" stroke-width="1" opacity="0.5" />
+
+        </svg>
+      </div>
+
+    </section>
+
+
+    <section class="wp-page" id="page-3">
+
+      <div class="wp-page-num">PAGE 03</div>
+
+      <h2>Three Pillars, One Purpose</h2>
+
+      <p>
+        ChucklePad's long-term vision is built around three
+        impact pillars.
+        <strong>31% of the total $CPAD supply</strong> is
+        allocated directly to fund them.
+      </p>
+
+      <div class="wp-emoji-row">
+        <span>🎓</span>
+        <span>🌾</span>
+        <span>❤️</span>
+      </div>
+
+      <h3>🎓 ChuckleScholar</h3>
+      <p>
+        <strong>Helping make education more accessible.</strong>
+        Supporting children and young people who lack essential
+        educational resources — school supplies, books,
+        scholarships, and educational programs.
+      </p>
+
+      <h3>🌾 ChuckleFeed</h3>
+      <p>
+        <strong>Supporting food security through agriculture.</strong>
+        Supporting agricultural communities and encouraging
+        greater participation in farming and food production —
+        small-scale farmers, farming supplies, youth agriculture,
+        and community food initiatives.
+      </p>
+
+      <h3>❤️ ChuckleCare</h3>
+      <p>
+        <strong>Supporting vulnerable children.</strong>
+        Helping children and communities facing difficult
+        circumstances — children's homes, vulnerable children,
+        basic necessities, and community support.
+      </p>
+
+      <h4>WHY THIS IS STRUCTURAL, NOT SYMBOLIC</h4>
+
+      <p>
+        Many projects write a charity percentage into their
+        tokenomics and never deliver. ChucklePad's commitment
+        is different because:
+      </p>
+
+      <ul>
+        <li>The allocation is written into the token contract.</li>
+        <li>Release is governed by <strong>ChuckleGovernment</strong> — the community that holds the NFTs (see Page 5).</li>
+        <li>Every distribution will be publicly logged with partner identification, amount, and date.</li>
+        <li>No pillar funds will move without community approval.</li>
+      </ul>
+
+      <p>
+        Real impact is not a launch-day event — it is a decade-long project.
+      </p>
+
+    </section>
+
+
+    <section class="wp-page" id="page-4">
+
+      <div class="wp-page-num">PAGE 04</div>
+
+      <h2>The Token That Earns Its Name</h2>
+
+      <div class="wp-emoji-hero">🪙</div>
+
+      <p>
+        <strong>$CPAD</strong> is the ecosystem's future on-chain
+        token, to be introduced when the ecosystem is ready for
+        its on-chain economy. It is not for sale today.
+      </p>
+
+      <h3>Proposed Supply</h3>
+      <p><strong>100,000,000,000 CPAD</strong></p>
+
+      <h3>Potential Utility</h3>
+      <ul>
+        <li>Community rewards</li>
+        <li>Ecosystem participation</li>
+        <li>Staking</li>
+        <li>Governance</li>
+        <li>Community initiatives</li>
+        <li>Future airdrop distribution</li>
+      </ul>
+
+      <h3>Proposed Allocation</h3>
+
+      <div class="wp-svg-wrap">
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" style="max-width: 340px;">
+          <path d="M 150 150 L 150 20 A 130 130 0 0 1 287.8 130 Z" fill="#ff8a00" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 287.8 130 A 130 130 0 0 1 267.6 224.5 Z" fill="#ff6b00" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 267.6 224.5 A 130 130 0 0 1 189.3 269.7 Z" fill="#ffb547" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 189.3 269.7 A 130 130 0 0 1 110.7 269.7 Z" fill="#ffd166" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 110.7 269.7 A 130 130 0 0 1 32.4 224.5 Z" fill="#ff4d6d" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 32.4 224.5 A 130 130 0 0 1 3.9 160 Z" fill="#c77dff" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 3.9 160 A 130 130 0 0 1 12.2 130 Z" fill="#7bc4ff" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 12.2 130 A 130 130 0 0 1 30.8 87.5 Z" fill="#4ade80" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 30.8 87.5 A 130 130 0 0 1 57.5 57.5 Z" fill="#f472b6" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 57.5 57.5 A 130 130 0 0 1 74 45 Z" fill="#22d3ee" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 74 45 A 130 130 0 0 1 82.5 41 Z" fill="#a78bfa" stroke="#07070a" stroke-width="1.5" />
+          <path d="M 150 150 L 82.5 41 A 130 130 0 0 1 150 20 Z" fill="#facc15" stroke="#07070a" stroke-width="1.5" />
+          <circle cx="150" cy="150" r="52" fill="#07070a" />
+          <text x="150" y="144" text-anchor="middle" fill="#ff8a00" font-size="16" font-weight="900" letter-spacing="1">100B</text>
+          <text x="150" y="164" text-anchor="middle" fill="#a7a7b0" font-size="10" letter-spacing="2">CPAD</text>
+        </svg>
+      </div>
+
+      <div class="wp-alloc">
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#ff8a00"></span>Presale / Early Community Funding</div><span class="wp-alloc-pct">22%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#ff6b00"></span>Liquidity</div><span class="wp-alloc-pct">22%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#ffb547"></span>ChuckleScholar</div><span class="wp-alloc-pct">13%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#ffd166"></span>ChuckleFeed</div><span class="wp-alloc-pct">10%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#ff4d6d"></span>ChuckleCare</div><span class="wp-alloc-pct">8%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#c77dff"></span>Community Airdrop</div><span class="wp-alloc-pct">7%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#7bc4ff"></span>Treasury / Development</div><span class="wp-alloc-pct">7.5%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#4ade80"></span>Staking &amp; Community Rewards</div><span class="wp-alloc-pct">5%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#f472b6"></span>Community NFT Holder Rewards</div><span class="wp-alloc-pct">3%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#22d3ee"></span>Base Network Community</div><span class="wp-alloc-pct">2%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#a78bfa"></span>Marketing &amp; Partnerships</div><span class="wp-alloc-pct">0.5%</span></div>
+        <div class="wp-alloc-row"><div class="wp-alloc-label"><span class="wp-alloc-swatch" style="background:#facc15"></span>No Team Token</div><span class="wp-alloc-pct">0%</span></div>
+      </div>
+
+      <h4>SIGNIFICANT VESTING</h4>
+
+      <p>
+        <strong>$CPAD will operate under a significant and
+        mandatory vesting schedule.</strong> No allocation will unlock at TGE.
+      </p>
+
+      <h4>31% TO THE MISSION</h4>
+
+      <p>
+        ChuckleScholar (13%) + ChuckleFeed (10%) + ChuckleCare (8%)
+        = <strong>31% of the entire supply</strong>, committed to
+        the three impact pillars.
+      </p>
+
+      <h4>NO TEAM TOKEN</h4>
+
+      <p>
+        The team holds <strong>0%</strong> of the supply.
+        There is no founder allocation. The people building
+        ChucklePad are not holding a hidden bag. What the
+        community receives, the community governs.
+      </p>
+
+    </section>
+
+
+    <section class="wp-page" id="page-5">
+
+      <div class="wp-page-num">PAGE 05</div>
+
+      <h2>The Community That Governs Itself</h2>
+
+      <div class="wp-emoji-hero">👑</div>
+
+      <p>
+        ChucklePad is built to be handed over. The vehicle for that
+        handover is the <strong>ChuckleGovernment NFT</strong>.
+      </p>
+
+      <h3>ChuckleGovernment NFT</h3>
+
+      <p>
+        <strong>ChuckleGovernment</strong> is a fixed collection
+        of <strong>10,000 NFTs</strong> on Base.
+        Holding a ChuckleGovernment NFT is not just a badge —
+        it is a seat at the governance table.
+      </p>
+
+      <h3>What Holders Govern</h3>
+
+      <p>
+        ChuckleGovernment holders will collectively decide the
+        following. No single founder, advisor, or core team
+        member can override these decisions:
+      </p>
+
+      <ul>
+        <li><strong>Treasury disbursements</strong> — how protocol funds are allocated</li>
+        <li><strong>Charitable distributions</strong> — which partners receive pillar funds, and when</li>
+        <li><strong>Liquidity deployments</strong> — how liquidity is structured and released</li>
+        <li><strong>Partnerships</strong> — which entities ChucklePad works with</li>
+        <li><strong>$CPAD allocation to holders</strong> — as committed in the tokenomics</li>
+      </ul>
+
+      <div class="wp-svg-wrap">
+        <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+
+          <rect x="20" y="70" width="120" height="60" rx="14" fill="none" stroke="#ff8a00" stroke-width="1.5" />
+          <text x="80" y="98" text-anchor="middle" fill="#ff8a00" font-size="11" font-weight="900" letter-spacing="1">NFT</text>
+          <text x="80" y="115" text-anchor="middle" fill="#a7a7b0" font-size="9" letter-spacing="1">HOLDERS</text>
+
+          <line x1="150" y1="100" x2="200" y2="100" stroke="#ff8a00" stroke-width="1.5" />
+          <polygon points="200,100 192,95 192,105" fill="#ff8a00" />
+
+          <rect x="210" y="70" width="140" height="60" rx="14" fill="none" stroke="#ff8a00" stroke-width="1.5" />
+          <text x="280" y="98" text-anchor="middle" fill="#ff8a00" font-size="11" font-weight="900" letter-spacing="1">PROPOSAL</text>
+          <text x="280" y="115" text-anchor="middle" fill="#a7a7b0" font-size="9" letter-spacing="1">DISCUSSION</text>
+
+          <line x1="360" y1="100" x2="410" y2="100" stroke="#ff8a00" stroke-width="1.5" />
+          <polygon points="410,100 402,95 402,105" fill="#ff8a00" />
+
+          <rect x="420" y="70" width="140" height="60" rx="14" fill="none" stroke="#ff8a00" stroke-width="1.5" />
+          <text x="490" y="98" text-anchor="middle" fill="#ff8a00" font-size="11" font-weight="900" letter-spacing="1">MULTISIG</text>
+          <text x="490" y="115" text-anchor="middle" fill="#a7a7b0" font-size="9" letter-spacing="1">EXECUTION</text>
+
+          <path d="M 490 140 Q 490 180 300 180 Q 80 180 80 140" fill="none" stroke="#ff8a00" stroke-width="1" opacity="0.4" stroke-dasharray="4 4" />
+          <text x="300" y="175" text-anchor="middle" fill="#777780" font-size="9" letter-spacing="1">TRANSPARENCY LOOP</text>
+
+        </svg>
+      </div>
+
+      <h3>The Transition</h3>
+
+      <p>
+        ChucklePad V1 is built and maintained by a small
+        founding team. That is honest. But it is also temporary.
+      </p>
+
+      <p>
+        The transition looks like this:
+      </p>
+
+      <ul>
+        <li><strong>V1</strong> — Core team builds the platform, runs the games, keeps the lights on.</li>
+        <li><strong>V2</strong> — ChuckleGovernment NFT launches. Governance infrastructure is deployed. Multisig is configured. Control begins to shift.</li>
+        <li><strong>V2+</strong> — Every protocol decision moves to ChuckleGovernment vote. The founding team becomes one voice among many.</li>
+      </ul>
+
+      <p>
+        By the end, ChucklePad will not belong to its founders.
+        It will belong to the people who hold a piece of it.
+      </p>
+
+    </section>
+
+
+    <section class="wp-page" id="page-6">
+
+      <div class="wp-page-num">PAGE 06</div>
+
+      <h2>Honest Hindrances</h2>
+
+      <p>
+        Any white paper that claims a project has no problems
+        is lying. ChucklePad has real challenges.
+        Here they are — briefly, honestly, and with the
+        approach we are taking to address each.
+      </p>
+
+      <div class="wp-hindrance">
+        <div class="wp-hindrance-head">
+          <span class="wp-hindrance-emoji">⚠️</span>
+          <span class="wp-hindrance-label">HINDRANCE 01</span>
+        </div>
+        <h3>Charity cannot be distributed immediately or without limit.</h3>
+        <p>
+          The 31% pillar allocation is meaningful, but releasing
+          it all at once would collapse the token and defeat the
+          purpose of long-term impact. The annual release schedule —
+          a small, defined percentage of the pillar allocation,
+          released each year under ChuckleGovernment vote — will be
+          finalized in White Paper V2. Until then, no pillar funds
+          will be distributed. Sustainability before spectacle.
+        </p>
+      </div>
+
+      <div class="wp-hindrance">
+        <div class="wp-hindrance-head">
+          <span class="wp-hindrance-emoji">📣</span>
+          <span class="wp-hindrance-label">HINDRANCE 02</span>
+        </div>
+        <h3>Marketing and promotion with zero initial budget.</h3>
+        <p>
+          ChucklePad has no funded marketing budget. Paid
+          advertising, influencer campaigns, and exchange listings
+          all cost money the initial team does not have. Growth
+          will be organic, product-led, and community-driven.
+          Every Point earned, every referral made, every honest
+          white paper shared is a piece of the strategy. It will
+          be slow. It will work because the product is good,
+          not because the budget is large.
+        </p>
+      </div>
+
+      <div class="wp-hindrance">
+        <div class="wp-hindrance-head">
+          <span class="wp-hindrance-emoji">⚖️</span>
+          <span class="wp-hindrance-label">HINDRANCE 03</span>
+        </div>
+        <h3>Regulatory uncertainty in crypto and charity.</h3>
+        <p>
+          Laws around token distributions and charitable giving
+          differ wildly by country. Some jurisdictions may restrict
+          ChucklePad's ability to operate or distribute. The
+          approach is deliberate: geo-restricted participation
+          where required, no promises of financial returns,
+          and a clear legal separation between the platform
+          (ChucklePad) and the future token ($CPAD). The platform
+          is a game and community. The token is a future thing.
+          This distinction is preserved everywhere.
+        </p>
+      </div>
+
+      <div class="wp-hindrance">
+        <div class="wp-hindrance-head">
+          <span class="wp-hindrance-emoji">🔍</span>
+          <span class="wp-hindrance-label">HINDRANCE 04</span>
+        </div>
+        <h3>Verification of charitable impact.</h3>
+        <p>
+          Anyone can claim to give to charity. Without
+          verifiable reporting, ChucklePad's promises are
+          just words. Every charitable distribution will be
+          logged in the ChuckleGovernment public records:
+          partner identity, amount, date, and where possible
+          on-chain attestation. Full transparency, permanently
+          auditable.
+        </p>
+      </div>
+
+      <h4>RISK DISCLOSURE</h4>
+
+      <p>
+        <strong>Cryptocurrency investments carry significant risk.
+        Do not participate in crypto expecting quick wealth.</strong>
+        Always do your own research (DYOR). Never invest more
+        than you can afford to lose.
+      </p>
+
+      <p>
+        ChucklePad makes no guarantees about future token
+        value, listing price, or financial return.
+        <strong>$CPAD does not exist yet and is not for sale.</strong>
+        Nothing in this white paper is financial, legal, or
+        tax advice. Participation in Points, Tickets, or the
+        ChuckleGovernment NFT does not guarantee any future
+        token allocation.
+      </p>
+
+      <p>
+        The three impact pillars are long-term commitments
+        funded slowly and transparently. They are not
+        immediate programs, and they are not guaranteed
+        to succeed. They are simply what ChucklePad is
+        trying to build.
+      </p>
+
+      <p>
+        Until then — <strong>little by little.</strong> 😂
+      </p>
+
+      <p style="margin-top: 50px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; color: #777780; font-size: 13px;">
+        ChucklePad · White Paper V1 · September 2026<br>
+        <strong style="color: #ff8a00;">Laugh. Participate. Earn. Give Back.</strong>
+      </p>
+
+    </section>
+
+  </main>
+</div>
+
+
+<button class="wp-top" id="wpTop" aria-label="Back to top">↑</button>
+
+
+<script>
+(function () {
+
+  const progress = document.getElementById("wpProgress");
+  const topBtn   = document.getElementById("wpTop");
+
+  function updateProgress() {
+
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+    progress.style.width = pct + "%";
+
+    if (scrollTop > 600) {
+      topBtn.classList.add("show");
+    } else {
+      topBtn.classList.remove("show");
+    }
+
+  }
+
+  window.addEventListener("scroll", updateProgress);
+  updateProgress();
+
+  topBtn.addEventListener("click", function () {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  const navLinks = Array.from(document.querySelectorAll("#wpNav a"));
+  const sections = Array.from(document.querySelectorAll(".wp-page"));
+
+  function highlight() {
+
+    const fromTop = window.scrollY + 120;
+    let current = sections[0];
+
+    for (const sec of sections) {
+      if (sec.offsetTop <= fromTop) current = sec;
+    }
+
+    navLinks.forEach((link) => {
+      link.classList.toggle(
+        "active",
+        link.getAttribute("href") === "#" + current.id
+      );
+    });
+
+  }
+
+  window.addEventListener("scroll", highlight);
+  highlight();
+
+})();
+</script>
+
+<%- include("partials/footer") %>

@@ -1,0 +1,837 @@
+<%
+  const title = "ChucklePad 😂 Laugh. Participate. Earn. Give Back.";
+
+  const allocation = [
+    { label: "Presale / Early Community", pct: 22,   color: "#ff8a00" },
+    { label: "Liquidity",                 pct: 22,   color: "#ff6b00" },
+    { label: "ChuckleScholar",            pct: 13,   color: "#ffb547" },
+    { label: "ChuckleFeed",               pct: 10,   color: "#ffd166" },
+    { label: "ChuckleCare",               pct: 8,    color: "#ff4d6d" },
+    { label: "Community Airdrop",         pct: 7,    color: "#c77dff" },
+    { label: "Treasury / Development",    pct: 7.5,  color: "#7bc4ff" },
+    { label: "Staking & Rewards",         pct: 5,    color: "#4ade80" },
+    { label: "NFT Holder Rewards",        pct: 3,    color: "#f472b6" },
+    { label: "Base Network Community",    pct: 2,    color: "#22d3ee" },
+    { label: "Marketing & Partnerships",  pct: 0.5,  color: "#a78bfa" }
+  ];
+
+  let cumulative = 0;
+  const slices = allocation.map(({ label, pct, color }) => {
+    const startAngle = (cumulative / 100) * 360;
+    cumulative += pct;
+    const endAngle = (cumulative / 100) * 360;
+
+    const startRad = ((startAngle - 90) * Math.PI) / 180;
+    const endRad   = ((endAngle   - 90) * Math.PI) / 180;
+
+    const cx = 150, cy = 150, r = 130;
+
+    const x1 = cx + r * Math.cos(startRad);
+    const y1 = cy + r * Math.sin(startRad);
+    const x2 = cx + r * Math.cos(endRad);
+    const y2 = cy + r * Math.sin(endRad);
+
+    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+
+    const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+
+    return { label, pct, color, path };
+  });
+%>
+
+<%- include("partials/header", { title }) %>
+
+<style>
+  .site-header .main-nav a:not(.nav-login):not(.nav-join) {
+    display: none;
+  }
+
+  .eyebrow,
+  .impact-label,
+  .card-number,
+  .game-tag {
+    font-weight: 900;
+    color: #ff8a00;
+  }
+
+  .eyebrow       { font-size: 16px; letter-spacing: 0.18em; }
+  .impact-label  { font-size: 15px; letter-spacing: 0.14em; }
+  .card-number   { font-size: 15px; letter-spacing: 0.14em; }
+  .game-tag      { font-size: 14px; letter-spacing: 0.14em; }
+
+  .hero-emoji-row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin: 40px 0 10px;
+    font-size: clamp(64px, 12vw, 130px);
+    line-height: 1;
+    font-family:
+      "Apple Color Emoji",
+      "Segoe UI Emoji",
+      "Noto Color Emoji",
+      "Segoe UI Symbol",
+      sans-serif;
+    filter: saturate(1.4) brightness(1.15)
+            drop-shadow(0 0 40px rgba(255,138,0,0.25));
+    user-select: none;
+  }
+
+  .hero-emoji-row span {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+
+  .hero-emoji-row span:nth-child(1) { transform: rotate(-6deg); }
+  .hero-emoji-row span:nth-child(3) { transform: rotate(6deg); }
+
+  .hero-emoji-row span:hover {
+    transform: scale(1.15) rotate(0deg);
+  }
+
+  .tokenomics-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 40px;
+    align-items: center;
+    margin-top: 30px;
+  }
+
+  .pie-chart svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .legend-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .legend-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 14px;
+  }
+
+  .legend-list li:last-child { border-bottom: 0; }
+
+  .legend-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+
+  .legend-label { flex: 1; color: #d8d8e0; }
+
+  .legend-pct {
+    color: #ff8a00;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+  }
+
+  .meme-wall {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 40px;
+    text-align: center;
+  }
+
+  .meme-wall .meme {
+    font-size: 90px;
+    line-height: 1;
+    transition: transform 0.15s ease;
+    user-select: none;
+  }
+
+  .meme-wall .meme:hover {
+    transform: scale(1.15) rotate(-6deg);
+  }
+
+  .terms-toggle {
+    cursor: pointer;
+    user-select: none;
+    display: inline-block;
+    padding: 12px 20px;
+    border: 1px solid #3a3a42;
+    border-radius: 999px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    font-size: 13px;
+    color: #ff8a00;
+    background: transparent;
+  }
+
+  .terms-toggle:hover { border-color: #ff8a00; }
+
+  .terms-body {
+    display: none;
+    margin-top: 25px;
+    padding: 25px;
+    border: 1px solid #303038;
+    border-radius: 20px;
+    background: #0c0c10;
+    line-height: 1.7;
+    font-size: 15px;
+    color: #b4b4bd;
+  }
+
+  .terms-body.open { display: block; }
+
+  .terms-body h4 {
+    color: #ff8a00;
+    margin-top: 25px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+  }
+
+  .terms-body h4:first-child { margin-top: 0; }
+
+  @media (max-width: 720px) {
+    .tokenomics-layout { grid-template-columns: 1fr; }
+    .meme-wall         { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 700px) {
+    .hero-emoji-row {
+      gap: 18px;
+      font-size: clamp(56px, 18vw, 90px);
+    }
+  }
+</style>
+
+
+<section class="hero">
+
+  <div class="hero-badge">
+    😂 MEME CULTURE × COMMUNITY × IMPACT
+  </div>
+
+  <h1>
+    LAUGH.<br>
+    PARTICIPATE.<br>
+    <span>EARN.</span><br>
+    GIVE BACK.
+  </h1>
+
+  <p class="hero-text">
+    What if a meme community could change lives?
+    ChucklePad is a community-driven meme ecosystem
+    built entirely on Base network — combining meme
+    culture with meaningful participation and
+    real-world impact.
+  </p>
+
+  <div class="hero-emoji-row">
+    <span>😂</span>
+    <span>🤣</span>
+    <span>😹</span>
+  </div>
+
+  <div class="hero-actions">
+
+    <a href="/register" class="button button-primary">
+      Join ChucklePad 😂
+    </a>
+
+    <a href="/register" class="button button-secondary">
+      Join Airdrop
+    </a>
+
+  </div>
+
+  <div class="hero-note">
+    Little by little. 🤣
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <div class="section-heading">
+    <span class="eyebrow">😂 THE VIBE</span>
+    <h2>This is what we're about.</h2>
+  </div>
+
+  <div class="meme-wall">
+    <div class="meme">😂</div>
+    <div class="meme">🤣</div>
+    <div class="meme">😹</div>
+    <div class="meme">😆</div>
+    <div class="meme">🤪</div>
+    <div class="meme">😜</div>
+    <div class="meme">🥳</div>
+    <div class="meme">🙃</div>
+  </div>
+
+</section>
+
+
+<section class="section dark-section">
+
+  <div class="section-heading">
+
+    <span class="eyebrow">01 / THE IDEA</span>
+
+    <h2>Built for more than memes.</h2>
+
+    <p>
+      Meme culture is powerful. It brings people
+      together, creates inside jokes, and builds
+      communities around shared laughter. But what
+      if that same energy could do something more?
+    </p>
+
+    <p>
+      The philosophy is simple:
+      <strong>people should not have to choose
+      between having fun and doing something
+      meaningful.</strong>
+    </p>
+
+  </div>
+
+  <div class="card-grid">
+
+    <article class="meme-card">
+      <span class="card-number">01</span>
+      <h3>Participate 😂</h3>
+      <p>
+        Complete daily challenges, play games,
+        build streaks, and bring real people
+        into the laugh.
+      </p>
+    </article>
+
+    <article class="meme-card">
+      <span class="card-number">02</span>
+      <h3>Earn 🤣</h3>
+      <p>
+        Your participation earns ChucklePad
+        Points across Daily Hunts, Rocket Rush,
+        Weekly Heists, and referrals.
+      </p>
+    </article>
+
+    <article class="meme-card">
+      <span class="card-number">03</span>
+      <h3>Give Back ❤️</h3>
+      <p>
+        ChucklePad connects community growth
+        with education, food security, and
+        community support.
+      </p>
+    </article>
+
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <div class="section-heading">
+
+    <span class="eyebrow">02 / IMPACT</span>
+
+    <h2>Three pillars of real impact.</h2>
+
+    <p>
+      ChucklePad's vision is built around three
+      primary impact pillars — funded by the
+      ecosystem itself.
+    </p>
+
+  </div>
+
+  <div class="impact-grid">
+
+    <article class="impact-card">
+      <div class="impact-label">🎓 CHUCKLESCHOLAR</div>
+      <h3>Education</h3>
+      <p>
+        Helping make education more accessible —
+        school supplies, books, scholarships,
+        and educational programs for children
+        and young people who lack essential
+        resources.
+      </p>
+    </article>
+
+    <article class="impact-card">
+      <div class="impact-label">🌾 CHUCKLEFEED</div>
+      <h3>Food &amp; Agriculture</h3>
+      <p>
+        Supporting food security through
+        agriculture — small-scale farmers,
+        farming supplies, youth agriculture,
+        and community food initiatives.
+      </p>
+    </article>
+
+    <article class="impact-card">
+      <div class="impact-label">❤️ CHUCKLECARE</div>
+      <h3>Community Support</h3>
+      <p>
+        Supporting vulnerable children and
+        communities facing difficult circumstances —
+        children's homes, basic necessities,
+        and direct community support.
+      </p>
+    </article>
+
+  </div>
+
+</section>
+
+
+<section class="section dark-section">
+
+  <div class="section-heading">
+
+    <span class="eyebrow">03 / PLAY</span>
+
+    <h2>Your participation has a scoreboard.</h2>
+
+    <p>
+      Three games. One ecosystem. Every action
+      earns you something.
+    </p>
+
+  </div>
+
+  <div class="game-grid">
+
+    <a href="/hunt" class="game-card">
+      <span class="game-tag">DAILY</span>
+      <h3>Daily Hunt 😂</h3>
+      <p>
+        One question a day. Share a real idea.
+        Earn Points and Tickets for showing up
+        and thinking.
+      </p>
+      <span class="game-arrow">→</span>
+    </a>
+
+    <a href="/rocket" class="game-card">
+      <span class="game-tag">GAME</span>
+      <h3>Rocket Rush 🚀</h3>
+      <p>
+        Three attempts a day. Fly as long as
+        you dare. Cash out before the rocket
+        explodes. Provably fair.
+      </p>
+      <span class="game-arrow">→</span>
+    </a>
+
+    <a href="/heist" class="game-card">
+      <span class="game-tag">WEEKLY</span>
+      <h3>Weekly Heist 🏆</h3>
+      <p>
+        Turn your Daily Hunt tickets into your
+        weekly score. The top 100 ranks split
+        1,000,000 Points every Monday.
+      </p>
+      <span class="game-arrow">→</span>
+    </a>
+
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <div class="section-heading">
+
+    <span class="eyebrow">04 / TOKENOMICS</span>
+
+    <h2>$CPAD — the future on-chain token.</h2>
+
+    <p>
+      <strong>$CPAD</strong> will be introduced
+      when the ecosystem is ready for its on-chain
+      economy.
+    </p>
+
+    <p>
+      Proposed supply:
+      <strong>100,000,000,000 CPAD</strong>.
+      <strong>31%</strong> allocated directly to
+      the three impact pillars.
+      <strong>No team token.</strong> Ever.
+    </p>
+
+  </div>
+
+  <div class="tokenomics-layout">
+
+    <div class="pie-chart">
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <% slices.forEach((slice) => { %>
+          <path d="<%= slice.path %>" fill="<%= slice.color %>" stroke="#0b0b0d" stroke-width="1.5" />
+        <% }); %>
+        <circle cx="150" cy="150" r="55" fill="#0b0b0d" />
+        <text x="150" y="145" text-anchor="middle" fill="#ff8a00" font-size="14" font-weight="900" letter-spacing="1">100B</text>
+        <text x="150" y="165" text-anchor="middle" fill="#a7a7b0" font-size="11" letter-spacing="2">CPAD</text>
+      </svg>
+    </div>
+
+    <ul class="legend-list">
+      <% allocation.forEach((row) => { %>
+        <li>
+          <span class="legend-swatch" style="background: <%= row.color %>"></span>
+          <span class="legend-label"><%= row.label %></span>
+          <span class="legend-pct"><%= row.pct %>%</span>
+        </li>
+      <% }); %>
+    </ul>
+
+  </div>
+
+</section>
+
+
+<section class="section dark-section">
+
+  <div class="section-heading">
+
+    <span class="eyebrow">05 / ROADMAP</span>
+
+    <h2>Four phases. One vision.</h2>
+
+  </div>
+
+  <div class="card-grid">
+
+    <article class="meme-card">
+      <span class="card-number">PHASE 1</span>
+      <h3>Q3–Q4 2026</h3>
+      <p>
+        <strong>V1 Launch.</strong>
+        The ecosystem you're already using —
+        Daily Hunts, Rocket Rush, Weekly Heist,
+        referrals, community onboarding.
+      </p>
+    </article>
+
+    <article class="meme-card">
+      <span class="card-number">PHASE 2</span>
+      <h3>Q1 2027</h3>
+      <p>
+        <strong>V2 Launch.</strong>
+        Community presale · Smart contract audits.
+      </p>
+    </article>
+
+    <article class="meme-card">
+      <span class="card-number">PHASE 3</span>
+      <h3>Q2 2027</h3>
+      <p>
+        <strong>Token Generation Event.</strong>
+        $CPAD TGE · Community airdrop ·
+        Liquidity deployment · Staking platform ·
+        Governance launch · DEX listing ·
+        Community NFT sale.
+      </p>
+    </article>
+
+    <article class="meme-card">
+      <span class="card-number">PHASE 4</span>
+      <h3>Q3–Q4 2027</h3>
+      <p>
+        <strong>Real-World Impact.</strong>
+        ChuckleScholar grants · ChuckleFeed
+        initiatives · ChuckleCare programs ·
+        Community governance · Global expansion ·
+        Impact reporting.
+      </p>
+    </article>
+
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <div class="section-heading">
+
+    <span class="eyebrow">06 / START SMALL</span>
+
+    <h2>Build together.</h2>
+
+    <p>
+      Connect. Participate. Earn. Compete.
+      Bring your community. And help build
+      what comes next.
+    </p>
+
+    <p>
+      Meme culture brings people together.
+      Games keep them engaged. Challenges
+      encourage learning. Rewards recognize
+      contribution. And the ecosystem creates
+      a path toward real-world impact.
+    </p>
+
+  </div>
+
+  <div class="hero-actions" style="margin-top: 30px;">
+
+    <a href="/register" class="button button-primary">
+      Join ChucklePad 😂
+    </a>
+
+    <a href="/register" class="button button-secondary">
+      Join Airdrop
+    </a>
+
+  </div>
+
+</section>
+
+
+<section class="section dark-section">
+
+  <div class="section-heading">
+
+    <span class="eyebrow">07 / DISCLAIMER</span>
+
+    <h2>⚠️ Read this carefully.</h2>
+
+    <p>
+      <strong>Cryptocurrency investments carry
+      significant risk. Do not participate in
+      crypto expecting quick wealth.</strong>
+      Always do your own research (DYOR).
+      Never invest more than you can afford
+      to lose.
+    </p>
+
+  </div>
+
+  <div class="card-grid">
+
+    <article class="meme-card">
+      <span class="card-number">RISK</span>
+      <h3>No promises</h3>
+      <p>
+        ChucklePad makes no guarantees about
+        future token value, listing price, or
+        financial return. $CPAD does not exist
+        yet and is not for sale today.
+      </p>
+    </article>
+
+    <article class="meme-card">
+      <span class="card-number">DYOR</span>
+      <h3>Do your own research</h3>
+      <p>
+        Nothing on this platform is financial
+        advice. Participate only with full
+        understanding of the risks.
+      </p>
+    </article>
+
+    <article class="meme-card">
+      <span class="card-number">TERMS</span>
+      <h3>Terms of Service</h3>
+      <p>
+        Use of ChucklePad is governed by our
+        Terms of Service. Tap below to read
+        them inline.
+      </p>
+    </article>
+
+  </div>
+
+  <div style="margin-top: 40px;">
+
+    <div class="terms-toggle" id="termsToggle">
+      ▸ READ TERMS OF SERVICE
+    </div>
+
+    <div class="terms-body" id="termsBody">
+
+      <h4>1. ACCEPTANCE</h4>
+      <p>
+        By creating an account or using ChucklePad,
+        you agree to these Terms. If you do not
+        agree, do not use the platform.
+      </p>
+
+      <h4>2. ELIGIBILITY</h4>
+      <p>
+        You must be at least 18 years old, or the
+        age of majority in your jurisdiction,
+        whichever is higher. You are responsible
+        for complying with your local laws.
+      </p>
+
+      <h4>3. ACCOUNT</h4>
+      <p>
+        You are responsible for the security of
+        your account and password. One account
+        per person. Duplicate accounts, bots,
+        and automated participation are prohibited.
+      </p>
+
+      <h4>4. POINTS &amp; TICKETS</h4>
+      <p>
+        Points and Tickets are off-chain,
+        non-transferable, and have no monetary
+        value. They may be adjusted, reset, or
+        revoked at any time. They do not represent
+        equity, securities, or any financial
+        instrument.
+      </p>
+
+      <h4>5. FAIR PLAY</h4>
+      <p>
+        Attempts to exploit bugs, manipulate
+        scoring, abuse the referral system, or
+        interfere with other users will result
+        in account suspension and forfeiture of
+        any Points or Tickets.
+      </p>
+
+      <h4>6. $CPAD TOKEN</h4>
+      <p>
+        $CPAD does not currently exist and is not
+        for sale. Any future token distribution
+        will be governed by separate terms and
+        applicable regulations. Holding Points
+        does not guarantee any future token
+        allocation.
+      </p>
+
+      <h4>7. NO FINANCIAL ADVICE</h4>
+      <p>
+        Nothing on ChucklePad is financial,
+        legal, or tax advice. Cryptocurrency
+        involves significant risk. You are solely
+        responsible for your decisions.
+      </p>
+
+      <h4>8. CHANGES</h4>
+      <p>
+        These Terms may be updated at any time.
+        Continued use of the platform after
+        changes constitutes acceptance.
+      </p>
+
+      <h4>9. CONTACT</h4>
+      <p>
+        For questions, reach out through our
+        community channels on X.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <div class="section-heading">
+
+    <span class="eyebrow">FOLLOW</span>
+
+    <h2>Stay close to the laugh.</h2>
+
+  </div>
+
+  <div class="hero-actions">
+
+    <a
+      href="https://x.com/ChucklePad"
+      class="button button-secondary"
+      target="_blank"
+      rel="noopener"
+    >
+      Follow on X
+    </a>
+
+    <a
+      href="https://medium.com/@chucklepad"
+      class="button button-secondary"
+      target="_blank"
+      rel="noopener"
+    >
+      Read on Medium
+    </a>
+
+  </div>
+
+</section>
+
+
+<section class="cta-section">
+
+  <div>
+
+    <span class="eyebrow">READY? 😂</span>
+
+    <h2>
+      Start small.<br>
+      Build together.
+    </h2>
+
+    <p>
+      Join the community. Enter ChucklePad.
+      Laugh with strangers. Earn with friends.
+      Give back to people you'll never meet.
+    </p>
+
+    <div class="hero-actions">
+
+      <a href="/register" class="button button-primary">
+        Join the Community
+      </a>
+
+      <a href="/hunt" class="button button-secondary">
+        Enter ChucklePad
+      </a>
+
+      <a href="/whitepaper" class="button button-secondary">
+        Read White Paper
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script>
+  (function () {
+    const toggle = document.getElementById("termsToggle");
+    const body   = document.getElementById("termsBody");
+
+    if (!toggle || !body) return;
+
+    toggle.addEventListener("click", function () {
+      const open = body.classList.toggle("open");
+      toggle.textContent = open
+        ? "▾ HIDE TERMS OF SERVICE"
+        : "▸ READ TERMS OF SERVICE";
+    });
+  })();
+</script>
+
+<%- include("partials/footer") %>

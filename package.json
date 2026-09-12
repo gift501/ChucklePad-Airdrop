@@ -1,0 +1,41 @@
+{
+  "name": "chucklepad-airdrop",
+  "version": "1.0.0",
+  "description": "ChucklePad — Laugh. Participate. Earn. Give Back.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gift501/ChucklePad-Airdrop.git"
+  },
+  "keywords": [
+    "chucklepad",
+    "cpad",
+    "meme",
+    "community",
+    "airdrop"
+  ],
+  "author": "ChucklePad",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gift501/ChucklePad-Airdrop/issues"
+  },
+  "homepage": "https://github.com/gift501/ChucklePad-Airdrop#readme",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.116.0",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "express-session": "^1.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
